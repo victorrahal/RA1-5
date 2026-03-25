@@ -9,3 +9,10 @@ def estadoNumero(linha):
       ponto += 1
     numero.append(linha[i])
   return "".join(numero)
+
+def estadoOperador(linha):
+  for i in range(len(linha)):
+    if len(linha) > 1 and (linha[0] == "/") and (linha[1] == "/"):
+       return "//"
+    else:
+      return linha[i]
