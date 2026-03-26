@@ -63,7 +63,7 @@ def main():
             historico.append(0.0)
             continue
         try:
-            resultado = executarExpressao(tokens, memoria, historico)
+            resultado, memoria = executarExpressao(tokens, memoria, historico)
             resultados.append(resultado)
             historico.append(resultado)
         except Exception as e:
