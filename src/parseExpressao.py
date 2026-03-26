@@ -1,3 +1,24 @@
+def parseExpressao(linha):
+    tokens = []
+    i = 0
+    
+    while i < len(linha):
+        entrada = linha(i)    
+        if entrada == ' ':
+            i = i + 1
+            continue
+        elif entrada.isdigit():
+            token,i = estadoNumero(linha, i)
+            tokens.append(token)
+        elif entrada in ['+','-','*','/','%','^']:
+            token,i = estadoOperador(linha,i)
+            tokens.append(token)
+        elif entrada in "()":
+            token,i = estadoParenteses(linha,i)
+            tokens.append(token)
+        elif entrada.isalpha():
+            token,i = estadoComando(linha,i)
+            tokens.append(token)
 def estadoNumero(linha, i):
     numero = []
     ponto = 0
