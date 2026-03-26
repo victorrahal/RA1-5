@@ -1,4 +1,4 @@
-# FUNÇÃO LEITURA DO ARQUIVO TXT
+# Aluno 3: Lucas Balint Vilar
 
 def lerArquivo(nomeArquivo):
     linhas = []
