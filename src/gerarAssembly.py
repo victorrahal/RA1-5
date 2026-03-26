@@ -15,34 +15,36 @@ def gerarAssembly(todosTokens, arquivoSaida = 'out.s'):
     assembly.append(".text")
     assembly.append("_start:")
 
+
+    ContRegs_Result = 2 # contatodor dos registradores de resultados inicia em 2 (R2)
     # percorrer lista de tokens
     for tokens in todosTokens:
-        pilha = [] # pilha para rastreas os registradores
-        ContRegs = 0 # contador para nomear os regs
+        valores = [] # cria lista que vai salvar os numeros
         for token in tokens:
             if token in ['(', ')']: # ignora parenteses
                 continue
 
             # verifica se for um numero
             if ValidarNumero(token):
-                reg = f"R{ContRegs}" # cria o registrador R0, R1, etc
-                assembly.append(f'LDR {reg}, ={token}') # gera a instrução para carregar o numero no registrador
-                pilha.append((reg)) # empilha registrador
-                ContRegs += 1 # aumenta contador dos ContRegses
+                valores.append(token) # coloca o numero na lista
 
             elif token in ['+', '-', '*', '/']:
-                r2 = pilha.pop() #pega o ultimo registrador
-                r1 = pilha.pop() #pega o penultimo registrador
+                assembly.append(f'LDR R0, ={valores[0]}')
+                assembly.append(f'LDR R1, ={valores[1]}')
+                regResult = f'R{ContRegs_Result}'
 
                 match token:
                     case '+':
-                        assembly.append(f'ADD {r1}, {r1}, {r2}') # r1 = r1 + r2
+                        assembly.append(f'ADD {regResult}, R0, R1') # Rx = R0 + R1
                     case '-':
-                        assembly.append(f'SUB {r1}, {r1}, {r2}') # r1 = r1 + r2
+                        assembly.append(f'SUB {regResult}, R0, R1') # Rx = R0 - R1
                     case '*':
-                        assembly.append(f'MUL {r1}, {r1}, {r2}') # r1 = r1 * r2
+                        assembly.append(f'MUL {regResult}, R0, R1') # Rx = R0 * R1
                     case '/':
-                        assembly.append(f'SDIV {r1}, {r1}, {r2}') # r1 = r1 / r2 )
+                        assembly.append(f'SDIV {regResult}, R0, R1') # Rx = R0 / R1
+
+                ContRegs_Result += 1 # aumenta contador do registrador de resultado
+                valores = [] # zera lista de numeros para seguir para os próximos tokens    
 
 
     with open(arquivoSaida, 'w') as f:
