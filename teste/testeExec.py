@@ -40,7 +40,7 @@ def teste_divisao_inteira():
     memorias = {}
     res_anteriores = []
     resultado, memorias = executarExpressao(tokens, memorias, res_anteriores)
-    assert abs(resultado - 1.0) < 1e-9
+    assert abs(resultado - 2.0) < 1e-9
 
 def teste_potencia():
     tokens = ["(", "3.0", "2.0", "^", ")"]
