@@ -16,3 +16,12 @@ def estadoOperador(linha):
        return "//"
     else:
       return linha[i]
+  
+def estadoComando(linha):
+  comando = []
+  for i in range(len(linha)):
+    entrada = linha[i]
+    comando.append(entrada)
+  if linha not in ["MEM","RES"]:
+    raise Exception(f"Comando inválido")
+  return linha
