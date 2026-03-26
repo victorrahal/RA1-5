@@ -31,3 +31,6 @@ def estadoComando(linha):
   if linha not in ["MEM","RES"]:
     raise Exception(f"Comando inválido")
   return linha
+
+def estadoParenteses(linha, i):
+    return linha[i], i+1
