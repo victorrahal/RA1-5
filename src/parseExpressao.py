@@ -17,12 +17,11 @@ def estadoNumero(linha, i):
     numero = "".join(numero)
     return numero, i
 
-def estadoOperador(linha):
-  for i in range(len(linha)):
-    if len(linha) > 1 and (linha[0] == "/") and (linha[1] == "/"):
-       return "//"
+def estadoOperador(linha, i):
+    if linha[i] == '/' and i+1 < len(linha) and linha[i+1] == '/':
+        return "//", i+2
     else:
-      return linha[i]
+        return linha[i], i+1
   
 def estadoComando(linha):
   comando = []
