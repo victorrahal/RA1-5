@@ -1,51 +1,79 @@
-#Aluno 3: Lucas Balint Vilar
+# Aluno 3: Lucas Balint Vilar
 
 def ValidarNumero(token):
     try:
-        float(token) # verifica se é numero
-        return True # retorna verdadeiro se for
+        float(token)
+        return True
     except ValueError:
-        return False # retorna falso se não for numero
+        return False
 
-def gerarAssembly(todosTokens, arquivoSaida = 'out.s'):
-    assembly = [] # lista instruções assemblu
-    
+
+def gerarAssembly(todosTokens, arquivoSaida='out.s'):
+    assembly = []
 
     assembly.append(".global _start")
     assembly.append(".text")
     assembly.append("_start:")
 
+    regResult = 2  # registrador de resposta
 
-    ContRegs_Result = 2 # contatodor dos registradores de resultados inicia em 2 (R2)
-    # percorrer lista de tokens
     for tokens in todosTokens:
-        valores = [] # cria lista que vai salvar os numeros
+        pilhaReg = []
+        primeiraOp = True
+        regOp = 0  # controla r0 e r1
+
         for token in tokens:
-            if token in ['(', ')']: # ignora parenteses
+            if token in ['(', ')']:
                 continue
 
-            # verifica se for um numero
             if ValidarNumero(token):
-                valores.append(token) # coloca o numero na lista
+                if primeiraOp:
+                    # primeira operação usa r0 e r1
+                    assembly.append(f"LDR r{regOp}, ={token}")
+                    pilhaReg.append(f"r{regOp}")
+                    regOp += 1
+                else:
+                    # depois sempre usa r0
+                    assembly.append(f"LDR r0, ={token}")
+                    pilhaReg.append("r0")
 
             elif token in ['+', '-', '*', '/']:
-                assembly.append(f'LDR R0, ={valores[0]}')
-                assembly.append(f'LDR R1, ={valores[1]}')
-                regResult = f'R{ContRegs_Result}'
 
-                match token:
-                    case '+':
-                        assembly.append(f'ADD {regResult}, R0, R1') # Rx = R0 + R1
-                    case '-':
-                        assembly.append(f'SUB {regResult}, R0, R1') # Rx = R0 - R1
-                    case '*':
-                        assembly.append(f'MUL {regResult}, R0, R1') # Rx = R0 * R1
-                    case '/':
-                        assembly.append(f'SDIV {regResult}, R0, R1') # Rx = R0 / R1
+                if primeiraOp:
+                    # primeira operação → r0 op r1
+                    r1 = pilhaReg.pop()
+                    r0 = pilhaReg.pop()
 
-                ContRegs_Result += 1 # aumenta contador do registrador de resultado
-                valores = [] # zera lista de numeros para seguir para os próximos tokens    
+                    match token:
+                        case '+':
+                            assembly.append(f"ADD r{regResult}, {r0}, {r1}")
+                        case '-':
+                            assembly.append(f"SUB r{regResult}, {r0}, {r1}")
+                        case '*':
+                            assembly.append(f"MUL r{regResult}, {r0}, {r1}")
+                        case '/':
+                            assembly.append(f"SDIV r{regResult}, {r0}, {r1}")
 
+                    pilhaReg.append(f"r{regResult}")
+                    primeiraOp = False
+
+                else:
+                    # próximas operações caso seja aninhada
+                    r0 = pilhaReg.pop()
+
+                    match token:
+                        case '+':
+                            assembly.append(f"ADD r{regResult}, r{regResult}, {r0}")
+                        case '-':
+                            assembly.append(f"SUB r{regResult}, r{regResult}, {r0}")
+                        case '*':
+                            assembly.append(f"MUL r{regResult}, r{regResult}, {r0}")
+                        case '/':
+                            assembly.append(f"SDIV r{regResult}, r{regResult}, {r0}")
+
+                    pilhaReg.append(f"r{regResult}")
+
+        regResult += 1  # próximo token
 
     with open(arquivoSaida, 'w') as f:
         for linha in assembly:
@@ -53,7 +81,10 @@ def gerarAssembly(todosTokens, arquivoSaida = 'out.s'):
 
     return assembly
 
-todosTokens = [['(', '3', '2', '+', ')'], ['(', '3', '2', '-',')'],
-               ['(', '3', '2', '*', ')'], ['(', '3', '2', '/',')']]
-resultado = gerarAssembly(todosTokens)
-print(resultado)
+# TESTE
+todosTokens = [
+    ['(', '3', '2', '*', '3', '+', '4', '-', ')'],['(', '3', '2', '+', '3', '-', '4', '*', ')'],
+    ['3', '2', '/']
+]
+
+resultado = gerarAssembly(todosTokens, 'out.s')
