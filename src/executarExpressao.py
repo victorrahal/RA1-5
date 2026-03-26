@@ -17,7 +17,7 @@ def validar_int(token):
     valor = float(token)
     if not valor.is_integer():
         raise ValueError(f"RES requer índice não negativo: {token}")
-    return valor
+    return int(valor)
 
 def buscar_memoria(nome_mem, memorias):
     if nome_mem not in memorias:
@@ -27,7 +27,7 @@ def buscar_memoria(nome_mem, memorias):
 def buscar_res_anterior(indice, res_anteriores):
     if indice >= len(res_anteriores):
         raise ValueError("Não há resultados anteriores suficientes para RES")
-    return res_anteriores[-(indice + 1)]
+    return res_anteriores[indice]
 
 def validar_operadores_int(a, b, operador):
     if not float(a).is_integer() or not float(b).is_integer():
