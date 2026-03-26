@@ -16,24 +16,6 @@ from utils import validarArgumentos, salvarTokens, salvarAssembly, exibirResulta
 # que recebe a lista de tokens de todas as linhas e retorna uma string
 # contendo o código Assembly correspondente.
 
-import os
-
-from utils import validarArgumentos, salvarTokens, salvarAssembly, exibirResultados
-
-# Criar e importar o módulo lerArquivo.py com a função lerArquivo(nomeArquivo),
-# que recebe o caminho de um arquivo e retorna uma lista de strings (uma por linha).
-
-# Criar e importar o módulo parseExpressao.py com a função parseExpressao(linha),
-# que recebe uma linha de texto e retorna uma lista de tokens (análise léxica).
-
-# Criar e importar o módulo executarExpressao.py com a função executarExpressao(tokens, memoria, historico),
-# que recebe os tokens, um dicionário de memória e uma lista de histórico,
-# avalia a expressão e retorna o resultado numérico.
-
-# Criar e importar o módulo gerarAssembly.py com a função gerarAssembly(tokens_todas_linhas),
-# que recebe a lista de tokens de todas as linhas e retorna uma string
-# contendo o código Assembly correspondente.
-
 from lerArquivo import lerArquivo
 
 linhas = lerArquivo("arquivo1.txt")
