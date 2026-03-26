@@ -39,6 +39,10 @@ def gerarAssembly(todosTokens, arquivoSaida = 'out.s'):
                         assembly.append(f'ADD {r1}, {r1}, {r2}') # r1 = r1 + r2
                     case '-':
                         assembly.append(f'SUB {r1}, {r1}, {r2}') # r1 = r1 + r2
+                    case '*':
+                        assembly.append(f'MUL {r1}, {r1}, {r2}') # r1 = r1 * r2
+                    case '/':
+                        assembly.append(f'SDIV {r1}, {r1}, {r2}') # r1 = r1 / r2 )
 
 
     with open(arquivoSaida, 'w') as f:
@@ -47,6 +51,7 @@ def gerarAssembly(todosTokens, arquivoSaida = 'out.s'):
 
     return assembly
 
-todosTokens = [['(', '3', '2', '+', ')'], ['(', '3', '2', '-',')']]
+todosTokens = [['(', '3', '2', '+', ')'], ['(', '3', '2', '-',')'],
+               ['(', '3', '2', '*', ')'], ['(', '3', '2', '/',')']]
 resultado = gerarAssembly(todosTokens)
 print(resultado)

@@ -8,7 +8,7 @@ def num(token):
 def operador(token):
     return token in ["+", "-", "*", "/", "//", "%", "^"]
 
-def identificar_mem(token);
+def identificar_mem(token):
     return token.isalpha() and token.isupper() and token != "RES"
 
 def validar_int(token):
