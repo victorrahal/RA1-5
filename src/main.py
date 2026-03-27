@@ -1,95 +1,93 @@
 import os
-
-from utils import validarArgumentos, salvarTokens, salvarAssembly, exibirResultados
-
-# Criar e importar o módulo lerArquivo.py com a função lerArquivo(nomeArquivo),
-# que recebe o caminho de um arquivo e retorna uma lista de strings (uma por linha).
-
-# Criar e importar o módulo parseExpressao.py com a função parseExpressao(linha),
-# que recebe uma linha de texto e retorna uma lista de tokens (análise léxica).
-
-# Criar e importar o módulo executarExpressao.py com a função executarExpressao(tokens, memoria, historico),
-# que recebe os tokens, um dicionário de memória e uma lista de histórico,
-# avalia a expressão e retorna o resultado numérico.
-
-# Criar e importar o módulo gerarAssembly.py com a função gerarAssembly(tokens_todas_linhas),
-# que recebe a lista de tokens de todas as linhas e retorna uma string
-# contendo o código Assembly correspondente.
-
+ 
+from utils import validarArgumentos, salvarTokens, salvarAssembly
 from lerArquivo import lerArquivo
-
-linhas = lerArquivo("arquivo1.txt")
-print(linhas)
-
+from parseExpressao import parseExpressao
+from executarExpressao import executarExpressao
+from gerarAssembly import gerarAssembly
+from exibirResultados import exibirResultados
+ 
+ 
 def main():
-    # Valida os argumentos da linha de comando, garantindo que o usuário informou
-    # um arquivo válido e existente. Retorna o nome do arquivo a ser processado.
     nomeArquivo = validarArgumentos()
-    print(f"Processando o arquivo: {nomeArquivo}")
-
-    # Lê o conteúdo do arquivo de entrada e separa em uma lista de linhas.
-    # Se houver qualquer erro na leitura, exibe a mensagem e encerra a execução.
+    print(f"Processando arquivo: {nomeArquivo}")
+    print()
+ 
     try:
         linhas = lerArquivo(nomeArquivo)
     except Exception as e:
         print(f"Erro ao ler o arquivo: {e}")
         return
-
+ 
+    if not linhas:
+        print("Erro: nenhuma linha válida encontrada no arquivo.")
+        return
+ 
     print(f"Linhas lidas: {len(linhas)}")
-
-    # Percorre cada linha do arquivo e realiza a análise léxica (tokenização)
-    # através do parseExpressao. Os tokens de cada linha são armazenados em uma
-    # lista. Caso ocorra um erro léxico, a linha recebe uma lista vazia.
+    print()
+ 
     tokens_todas_linhas = []
+    print("Análise léxica:")
     for i, linha in enumerate(linhas):
         try:
             tokens = parseExpressao(linha)
             tokens_todas_linhas.append(tokens)
-            print(f"Linha {i+1}: {tokens}")
+            print(f"  Linha {i + 1}: {tokens}")
         except Exception as e:
-            print(f"Erro léxico na linha {i+1}: {e}")
+            print(f"  Linha {i + 1}: ERRO LÉXICO - {e}")
             tokens_todas_linhas.append([])
-
-    # Executa cada expressão tokenizada, mantendo um dicionário de memória para
-    # variáveis e um histórico de resultados anteriores. Linhas vazias ou com erro
-    # recebem o valor padrão 0.0.
-    memoria = {}
+    print()
+ 
+    memorias = {}
     historico = []
     resultados = []
-
+ 
     for i, tokens in enumerate(tokens_todas_linhas):
         if not tokens:
             resultados.append(0.0)
             historico.append(0.0)
             continue
         try:
-            resultado, memoria = executarExpressao(tokens, memoria, historico)
+            resultado, memorias = executarExpressao(tokens, memorias, historico)
             resultados.append(resultado)
             historico.append(resultado)
         except Exception as e:
-            print(f"Erro ao executar linha {i+1}: {e}")
+            print(f"Erro ao executar linha {i + 1}: {e}")
             resultados.append(0.0)
             historico.append(0.0)
-
-    # Exibe os resultados de todas as expressões processadas para o usuário.
+ 
     exibirResultados(resultados)
-
-    # Gera o código Assembly a partir dos tokens e salva em um arquivo .s,
-    # utilizando o mesmo nome base do arquivo de entrada.
+    print()
+ 
     try:
-        nomeBase = os.path.splitext(nomeArquivo)[0]
+        nomeBase = os.path.splitext(os.path.basename(nomeArquivo))[0]
+ 
         codigoAssembly = gerarAssembly(tokens_todas_linhas)
-        salvarAssembly(codigoAssembly, f"{nomeBase}.s")
+ 
+        dirOutputs = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'outputs')
+        os.makedirs(dirOutputs, exist_ok=True)
+ 
+        caminhoAssembly = os.path.join(dirOutputs, 'ultima_exec_Assembly.s')
+        salvarAssembly(codigoAssembly, caminhoAssembly)
+ 
+        caminhoAssemblyNome = os.path.join(dirOutputs, f"{nomeBase}.s")
+        salvarAssembly(codigoAssembly, caminhoAssemblyNome)
+ 
     except Exception as e:
         print(f"Erro ao gerar Assembly: {e}")
-
-    # Salva os tokens de todas as linhas em um arquivo JSON, permitindo
-    # consulta posterior da análise léxica realizada.
+ 
     try:
-        nomeBase = os.path.splitext(nomeArquivo)[0]
-        salvarTokens(tokens_todas_linhas, f"{nomeBase}_tokens.json")
+        caminhoTokens = os.path.join(dirOutputs, 'ultima_exec_Token.txt')
+        salvarTokens(tokens_todas_linhas, caminhoTokens)
+ 
+        caminhoTokensNome = os.path.join(dirOutputs, f"{nomeBase}_tokens.json")
+        salvarTokens(tokens_todas_linhas, caminhoTokensNome)
+ 
     except Exception as e:
         print(f"Erro ao salvar tokens: {e}")
+ 
+    print()
+    print("Processamento concluído com sucesso!")
  
  
 if __name__ == "__main__":
