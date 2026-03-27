@@ -1,4 +1,7 @@
 # Aluno 3: Lucas Balint Vilar
+import parseExpressao
+import lerArquivo
+
 
 def ValidarNomeMemoria(token):
     try:
@@ -198,13 +201,8 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
 
     return assembly  # retorna a lista
 
-todosTokens = [
-    ['3.14', '2', '5', '*', '+'],                
-    ['4', '2.5', '*', '6', '5', '*', '-'],       
-    ['10', '5.0', '+', '1', '3.57', '*', '-'],   
-    ['1', 'RES'],                                
-    ['4', 'RES'],                                 
-    ['2', 'RES', '3', 'RES', '+'],                
-]
+lista = lerArquivo.lerArquivo("src/arquivo1.txt")
+
+todosTokens = parseExpressao.parseMultiplas(lista)
 
 resultado = gerarAssembly(todosTokens, 'out.s')
