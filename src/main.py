@@ -62,7 +62,7 @@ def main():
     try:
         nomeBase = os.path.splitext(os.path.basename(nomeArquivo))[0]
  
-        codigoAssembly = gerarAssembly(tokens_todas_linhas)
+        codigoAssembly = gerarAssembly(tokens_todas_linhas, arquivoSaida='out.s')
  
         dirOutputs = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'outputs')
         os.makedirs(dirOutputs, exist_ok=True)
