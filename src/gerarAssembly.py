@@ -58,7 +58,7 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                 assembly.append(f"VLDR.F64 {reg}, [R0]") # carrega o valor no registrador
                 pilhaReg.append(reg)  # empilha o registrador para uso futuro
 
-            elif token in ['+', '-', '*', '/', '//']:
+            elif token in ['+', '-', '*', '/', '//', '%']:
                 # desempilha os dois últimos operandos
                 r2 = pilhaReg.pop()  # segundo operando
                 r1 = pilhaReg.pop()  # primeiro operando
@@ -76,6 +76,12 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                         assembly.append(f"VDIV.F64 {r1}, {r1}, {r2}") # divisão não inteira
                         assembly.append(f"VCVT.S32.F64 S0, {r1}") # converte para inteiro, truncando o float
                         assembly.append(f"VCVT.F64.S32 {r1}, S0") # volta o resultado para double
+                    case '%': # resto: A - (A/B) * B
+                        assembly.append(f"VDIV.F64 D6, {r1}, {r2}") # divisão não inteira
+                        assembly.append(f"VCVT.S32.F64 S0, D6") # converte para inteiro, truncando o float
+                        assembly.append(f"VCVT.F64.S32 D6, S0") # volta o resultado para double
+                        assembly.append(f"VMUL.F64 D6, D6, {r2}") # (A/B) * B
+                        assembly.append(f"VSUB.F64 {r1}, {r1}, D6") # A - (A/B) * B
 
                 pilhaReg.append(r1) # resultado volta para a pilha
                 regsLivres.append(r2) #libera o registrador
@@ -96,7 +102,8 @@ todosTokens = [
     ['4', '2.5', '*', '6', '5', '*', '-'],        
     ['10', '5.0', '+', '1', '3.57', '*', '-'],        
     ['10', '5', '/'],
-    ['10', '3', '//']
+    ['10', '3', '//'],
+    ['10', '3', '%']
 ]
 
 resultado = gerarAssembly(todosTokens, 'out.s')
