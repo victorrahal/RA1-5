@@ -205,4 +205,4 @@ lista = lerArquivo.lerArquivo("src/arquivo1.txt")
 
 todosTokens = parseExpressao.parseMultiplas(lista)
 
-resultado = gerarAssembly(todosTokens, 'out.s')
+resultado = gerarAssembly(todosTokens, 'outputs/out.s')
