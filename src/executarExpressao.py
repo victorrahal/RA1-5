@@ -16,18 +16,18 @@ def validar_int(token):
         raise ValueError(f"Valor inválido para RES: {token}")
     valor = float(token)
     if not valor.is_integer():
-        raise ValueError(f"RES não pode ter índice negativo: {token}")
-    return valor
+        raise ValueError(f"RES requer índice não negativo: {token}")
+    return int(valor)
 
 def buscar_memoria(nome_mem, memorias):
     if nome_mem not in memorias:
-        raise ValueError(f"Memória não iniciada: {nome_mem}")
+        return 0.0
     return memorias[nome_mem]
 
 def buscar_res_anterior(indice, res_anteriores):
     if indice >= len(res_anteriores):
         raise ValueError("Não há resultados anteriores suficientes para RES")
-    return res_anteriores[-(indice + 1)]
+    return res_anteriores[indice]
 
 def validar_operadores_int(a, b, operador):
     if not float(a).is_integer() or not float(b).is_integer():
@@ -100,6 +100,9 @@ def avaliar_tokens(tokens_limpos, memorias, res_anteriores):
         raise ValueError("Expressão inválida: pilha inconsistente")
 
     return pilha[0]
+
+def flattenTokens(tokens):
+    return [token for token in tokens if token not in ["(", ")"]]
 
 def executarExpressao (tokens, memorias, res_anteriores):
     pilha = []
