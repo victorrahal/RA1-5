@@ -63,6 +63,10 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     for memo in memorias:
         assembly.append(f"memo_{memo}: .double 0.0")
 
+    # guardar o resultado de cada operação
+    for k in range(len(todosTokens)):
+        assembly.append(f"resultado_{k}: .double 0.0")
+
     # cabeçalho padrão
     assembly.append(".text")
     assembly.append(".arm")
@@ -70,15 +74,45 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     assembly.append(".align 2")        
     assembly.append("_start:")
 
-    for tokens in todosTokens:# percorre cada expressão
+    for numLinha, tokens in enumerate(todosTokens):# percorre cada expressão
         pilhaReg = []  # pilha que armazena registradores em uso
         regsLivres = []
         for k in range(8):
-            regsLivres.append(f"D{k}")   
+            regsLivres.append(f"D{k}") 
+
+        proximoRES = None # guarda N quando o token for um numero
                  
-        for token in tokens: # percorre cada token da expressão
+        for k, token in enumerate(tokens): # percorre cada token da expressão
             if token in ['(', ')']:
                 continue  # ignora parênteses
+
+            if token == 'RES':
+               if proximoRES is None: # tratando o token RES
+                   assembly.append(f"UDF #1") # operando sem N
+                   continue
+               
+               N = int(float(proximoRES))
+               linhaResult = numLinha - N
+               
+               if linhaResult < 0 or linhaResult >= numLinha:
+                   assembly.append(f"UDF #2") # linha inexistente
+               else:
+                   if pilhaReg:
+                       regTemp = pilhaReg.pop()
+                       regsLivres.insert(0, regTemp)
+                   reg = regsLivres.pop(0)
+
+                   assembly.append(f"LDR R0, =resultado_{linhaResult}") # endereço do resultado da linha
+                   assembly.append(f"VLDR.F64 {reg}, [R0]") # carrega o resultado no registrador
+                   pilhaReg.append(reg)
+                
+               proximoRES = None
+               continue
+
+            if ValidarNumero (token) and k + 1 < len(tokens) and tokens[k + 1] == 'RES':
+                proximoRES = token
+            else:
+                proximoRES = None
 
             if ValidarNomeMemoria(token):
                 if pilhaReg:
@@ -147,6 +181,12 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                 pilhaReg.append(r1) # resultado volta para a pilha
                 regsLivres.append(r2) #libera o registrador
 
+        # salvar o resultado no topo da pilha de resultados ao final de cada linha
+        if pilhaReg:
+            topo = pilhaReg[-1]
+            assembly.append(f"LDR R0, =resultado_{numLinha}") # endereço da linha
+            assembly.append(f"VSTR.F64 {topo}, [R0]") # salva o resultado
+
     # finaliza o programa para não ficar em loop
     assembly.append("    MOV R7, #1")
     assembly.append("    SWI #0")
@@ -159,16 +199,12 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     return assembly  # retorna a lista
 
 todosTokens = [
-    ['3.14', '2', '5', '*', '+'],                 
-    ['4', '2.5', '*', '6', '5', '*', '-'],        
-    ['10', '5.0', '+', '1', '3.57', '*', '-'],        
-    ['10', '5', '/'],
-    ['10', '3', '//'],
-    ['10', '3', '%'],
-    ['2', '8', '^'],
-    ['42.0', 'MEMO'],
-    ['MEMO'],
-    ['VAR']
+    ['3.14', '2', '5', '*', '+'],                
+    ['4', '2.5', '*', '6', '5', '*', '-'],       
+    ['10', '5.0', '+', '1', '3.57', '*', '-'],   
+    ['1', 'RES'],                                
+    ['4', 'RES'],                                 
+    ['2', 'RES', '3', 'RES', '+'],                
 ]
 
 resultado = gerarAssembly(todosTokens, 'out.s')
