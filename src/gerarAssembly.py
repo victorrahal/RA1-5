@@ -11,6 +11,8 @@ def ValidarNumero(token):
 def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     assembly = []  # lista que armazena as instruções assembly
 
+    contadorPot = [0] # contador para gerar labels únicos de pontenciação
+
     # validar valores únicos para não dar conflito na compilação do assembly
     valores = [] # lista que armazena valores únicos
     for tokens in todosTokens:
@@ -24,6 +26,15 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                         break # se existir sai do loop
                 if not existente:
                     valores.append(val) # se nao existe adiciona na lista de valores unicos
+
+    # garantindo o numero 1 para que a potencição possa sempre ocorrer
+    existente = False
+    for v in valores:
+        if v == 1.0:
+            existente = True
+            break
+    if not existente:
+        valores.append(1.0)
 
     # cabeçalho seção data para definição dos valores doubles
     assembly.append(".global _start")
@@ -58,7 +69,7 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                 assembly.append(f"VLDR.F64 {reg}, [R0]") # carrega o valor no registrador
                 pilhaReg.append(reg)  # empilha o registrador para uso futuro
 
-            elif token in ['+', '-', '*', '/', '//', '%']:
+            elif token in ['+', '-', '*', '/', '//', '%', '^']:
                 # desempilha os dois últimos operandos
                 r2 = pilhaReg.pop()  # segundo operando
                 r1 = pilhaReg.pop()  # primeiro operando
@@ -82,6 +93,24 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
                         assembly.append(f"VCVT.F64.S32 D6, S0") # volta o resultado para double
                         assembly.append(f"VMUL.F64 D6, D6, {r2}") # (A/B) * B
                         assembly.append(f"VSUB.F64 {r1}, {r1}, D6") # A - (A/B) * B
+                    case '^': #potenciacao
+                        loopPot = f"pot_{contadorPot[0]}" # label do loop da potenciacao
+                        fimLoop = f"potFim_{contadorPot[0]}" # label de saida do loop da potenciacao
+                        contadorPot[0] += 1 # incrementa o contador
+                        assembly.append(f"VMOV.F64 D6, {r1}") # numero base
+                        assembly.append(f"VMOV.F64 D7, {r2}") # numero expoente
+                        assembly.append(f"LDR R0, =val_1_0") # Carrega o 1.0 no registrador
+                        assembly.append(f"VLDR.F64 D5, [R0]") #D5 = 1.0
+                        assembly.append(f"{loopPot}:")
+                        assembly.append(f"VCVT.S32.F64 S0, D7") # converte o expoente para numero inteiro
+                        assembly.append(f"VMOV R2, S0") # move o valor para um registrador geral R2
+                        assembly.append(f"CMP R2, #1") # compara o expoente com o numero 1
+                        assembly.append(f"BLE {fimLoop}") # sai do loop se o expoente for menor que 1
+                        assembly.append(f"VMUL.F64 D6, D6, {r1}") # multiplica o numero por ele mesmo
+                        assembly.append(f"VSUB.F64 D7, D7, D5") # diminui o expoente em 1 
+                        assembly.append(f"B {loopPot}") # volta pro loop e reinicia o processo
+                        assembly.append(f"{fimLoop}:") 
+                        assembly.append(f"VMOV.F64 {r1}, D6") # move o resultado final para r1
 
                 pilhaReg.append(r1) # resultado volta para a pilha
                 regsLivres.append(r2) #libera o registrador
@@ -103,7 +132,8 @@ todosTokens = [
     ['10', '5.0', '+', '1', '3.57', '*', '-'],        
     ['10', '5', '/'],
     ['10', '3', '//'],
-    ['10', '3', '%']
+    ['10', '3', '%'],
+    ['2', '8', '^']
 ]
 
 resultado = gerarAssembly(todosTokens, 'out.s')
