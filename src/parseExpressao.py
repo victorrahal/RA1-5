@@ -1,3 +1,5 @@
+import lerArquivo
+
 def parseExpressao(linha):
     tokens = []
     i = 0
@@ -87,3 +89,7 @@ def parseMultiplas(expressoes):
         resultado.append(tokens)
 
     return resultado
+
+lista = lerArquivo.lerArquivo("src/arquivo1.txt")
+resultado = parseMultiplas(lista)
+print(resultado)
