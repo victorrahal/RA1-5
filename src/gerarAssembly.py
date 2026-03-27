@@ -1,5 +1,13 @@
 # Aluno 3: Lucas Balint Vilar
 
+def ValidarNomeMemoria(token):
+    try:
+        if token.isalpha() and token.isupper() and token != 'RES':
+            return True
+    except ValueError:
+        return 'Nome de memória invalido'
+
+
 def ValidarNumero(token):
     try:
         float(token)  
@@ -12,6 +20,13 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     assembly = []  # lista que armazena as instruções assembly
 
     contadorPot = [0] # contador para gerar labels únicos de pontenciação
+
+    # pegar as memórias usadas nos tokens
+    memorias = []
+    for tokens in todosTokens:
+        for token in tokens:
+            if ValidarNomeMemoria(token) and token not in memorias:
+                memorias.append(token)
 
     # validar valores únicos para não dar conflito na compilação do assembly
     valores = [] # lista que armazena valores únicos
@@ -44,6 +59,10 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
         x = f"val_{str(val).replace(".", "_")}" # cria a label do valor
         assembly.append(f"{x}: .double {val}")
 
+    # declarar memorias com valor padrão de 0.0
+    for memo in memorias:
+        assembly.append(f"memo_{memo}: .double 0.0")
+
     # cabeçalho padrão
     assembly.append(".text")
     assembly.append(".arm")
@@ -60,6 +79,19 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
         for token in tokens: # percorre cada token da expressão
             if token in ['(', ')']:
                 continue  # ignora parênteses
+
+            if ValidarNomeMemoria(token):
+                if pilhaReg:
+                    r1 = pilhaReg.pop()
+                    assembly.append(f"LDR R0, =memo_{token}")
+                    assembly.append(f"VSTR.F64 {r1}, [R0]")
+                    regsLivres.insert(0, r1)
+                else:
+                    regist = regsLivres.pop(0)
+                    assembly.append(f"LDR R0, =memo_{token}")
+                    assembly.append(f"VLDR.F64 {reg}, [R0]")
+                    pilhaReg.append(regist)
+                continue
 
             if ValidarNumero(token):
                 reg = regsLivres.pop(0) # pega o primeiro registrador livre
@@ -133,7 +165,10 @@ todosTokens = [
     ['10', '5', '/'],
     ['10', '3', '//'],
     ['10', '3', '%'],
-    ['2', '8', '^']
+    ['2', '8', '^'],
+    ['42.0', 'MEMO'],
+    ['MEMO'],
+    ['VAR']
 ]
 
 resultado = gerarAssembly(todosTokens, 'out.s')
