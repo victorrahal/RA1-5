@@ -1,3 +1,7 @@
+# Aluno 1 - João Henrique
+# Aluno 2 - Victor Rahal Basseto
+# Aluno 3 - Paulo Henrique Eidi Mino
+
 import lerArquivo
 
 def parseExpressao(linha):
@@ -58,8 +62,8 @@ def estadoComando(linha, i):
         letras.append(linha[i])
         i = i + 1
     comando = "".join(letras)
-    if comando not in ["MEM", "RES"]:
-        raise Exception(f"Comando inválido não bate com a máquina de estados")
+    if not comando.isupper() or not comando.isalpha():
+        raise Exception(f"Comando inválido: {comando}")
 
     return comando, i
 
