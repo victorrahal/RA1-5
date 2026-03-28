@@ -39,7 +39,9 @@ Expressões podem ser aninhadas sem limite, por exemplo: ((3.0 2.0 *) (4.0 2.0 +
 Dentro da pasta `src`:
 
 bash
-python main.py arquivo1.txt
+python main.py arquivo1.txt*
+
+*arquivo1.txt pode ser substituido por arquivo2.txt ou arquivo3.txt
 
 O programa imprime os tokens gerados, os resultados das expressões, e salva dois arquivos na pasta outputs/:
 
