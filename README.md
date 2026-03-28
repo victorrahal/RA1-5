@@ -60,25 +60,25 @@ python -m pytest ../teste/ -v
 Estrutura
 
 RA1-5/
-├── src/
-│   ├── main.py
-│   ├── parseExpressao.py
-│   ├── executarExpressao.py
-│   ├── gerarAssembly.py
-│   ├── exibirResultados.py
-│   ├── lerArquivo.py
-│   ├── utils.py
-│   ├── arquivo1.txt
-│   ├── arquivo2.txt
-│   └── arquivo3.txt
-├── teste/
-│   ├── testeLexico.py
-│   ├── testeExec.py
-│   ├── testeAssembly.py
-│   └── testeArquivo.py
-└── outputs/
-    ├── Assembly.s
-    └── tokens.json
+- ├── src/
+- │   ├── main.py
+- │   ├── parseExpressao.py
+- │   ├── executarExpressao.py
+- │   ├── gerarAssembly.py
+- │   ├── exibirResultados.py
+- │   ├── lerArquivo.py
+- │   ├── utils.py
+- │   ├── arquivo1.txt
+- │   ├── arquivo2.txt
+- │   └── arquivo3.txt
+- ├── teste/
+- │   ├── testeLexico.py
+- │   ├── testeExec.py
+- │   ├── testeAssembly.py
+- │   └── testeArquivo.py
+- └── outputs/
+-    ├── Assembly.s
+-    └── tokens.json
 
 ---
 
