@@ -18,11 +18,11 @@ Um programa em Python que lê expressões aritméticas em Notação Polonesa Inv
 
 ### Operadores suportados
 
-| Operador | Descrição |
-| `+` `-` `*` `/` | Operações básicas com reais (64 bits IEEE 754) |
-| `//` | Divisão inteira |
-| `%` | Resto da divisão |
-| `^` | Potenciação (expoente inteiro positivo) |
+- | Operador | Descrição |
+- | `+` `-` `*` `/` | Operações básicas com reais (64 bits IEEE 754) |
+- | `//` | Divisão inteira |
+- | `%` | Resto da divisão |
+- | `^` | Potenciação (expoente inteiro positivo) |
 
 ### Comandos especiais
 
