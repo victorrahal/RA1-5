@@ -1,3 +1,6 @@
+# Aluno 1 - João Henrique
+# Aluno 4 - Paulo Henrique Eidi Mino
+
 # Função responsável por apresentar os resultados do código
 def exibirResultados(resultados: list[float]) -> None:
     print("=" * 40)
