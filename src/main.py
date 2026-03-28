@@ -1,3 +1,9 @@
+# Alunos
+# João Henrique Tomaz Dutra - @Jhtomaz
+# Lucas Balint Vilar        - @lucasdxl
+# Paulo Henrique Eidi Mino  - @phmino
+# Victor Rahal Basseto      - @victorrahal
+
 import os
  
 from utils import validarArgumentos, salvarTokens
