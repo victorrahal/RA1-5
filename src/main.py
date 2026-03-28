@@ -1,6 +1,6 @@
 import os
  
-from utils import validarArgumentos, salvarTokens, salvarAssembly
+from utils import validarArgumentos, salvarTokens
 from lerArquivo import lerArquivo
 from parseExpressao import parseExpressao
 from executarExpressao import executarExpressao
@@ -59,30 +59,19 @@ def main():
     exibirResultados(resultados)
     print()
  
+    dirOutputs = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'outputs')
+    os.makedirs(dirOutputs, exist_ok=True)
+
     try:
-        nomeBase = os.path.splitext(os.path.basename(nomeArquivo))[0]
- 
-        codigoAssembly = gerarAssembly(tokens_todas_linhas, arquivoSaida='out.s')
- 
-        dirOutputs = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'outputs')
-        os.makedirs(dirOutputs, exist_ok=True)
- 
-        caminhoAssembly = os.path.join(dirOutputs, 'ultima_exec_Assembly.s')
-        salvarAssembly(codigoAssembly, caminhoAssembly)
- 
-        caminhoAssemblyNome = os.path.join(dirOutputs, f"{nomeBase}.s")
-        salvarAssembly(codigoAssembly, caminhoAssemblyNome)
- 
+        caminhoAssembly = os.path.join(dirOutputs, 'Assembly.s')
+        codigoAssembly = gerarAssembly(tokens_todas_linhas, arquivoSaida=caminhoAssembly)
+        print(f"Assembly salvo em: {caminhoAssembly}")
     except Exception as e:
         print(f"Erro ao gerar Assembly: {e}")
- 
+
     try:
-        caminhoTokens = os.path.join(dirOutputs, 'ultima_exec_Token.txt')
+        caminhoTokens = os.path.join(dirOutputs, 'tokens.json')
         salvarTokens(tokens_todas_linhas, caminhoTokens)
- 
-        caminhoTokensNome = os.path.join(dirOutputs, f"{nomeBase}_tokens.json")
-        salvarTokens(tokens_todas_linhas, caminhoTokensNome)
- 
     except Exception as e:
         print(f"Erro ao salvar tokens: {e}")
  

@@ -69,9 +69,6 @@ def estadoOperador(linha, i):
     else:
         return linha[i], i+1
 
-def estadoParenteses(linha, i):
-    return linha[i], i+1
-
 def estadoParenteses(linha, i, pilha):
   if linha[i] == "(":
     pilha.append("(")
@@ -90,6 +87,9 @@ def parseMultiplas(expressoes):
 
     return resultado
 
-lista = lerArquivo.lerArquivo("src/arquivo1.txt")
-resultado = parseMultiplas(lista)
-print(resultado)
+if __name__ == "__main__":
+    import os
+    dirScript = os.path.dirname(os.path.abspath(__file__))
+    lista = lerArquivo.lerArquivo(os.path.join(dirScript, "arquivo1.txt"))
+    resultado = parseMultiplas(lista)
+    print(resultado)

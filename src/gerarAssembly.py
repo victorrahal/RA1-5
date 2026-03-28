@@ -19,7 +19,7 @@ def ValidarNumero(token):
         return False  # se der erro, não é número
 
 
-def gerarAssembly(todosTokens, arquivoSaida='out.s'):
+def gerarAssembly(todosTokens, arquivoSaida='ultima_exec_Assembly.s'):
     assembly = []  # lista que armazena as instruções assembly
 
     contadorPot = [0] # contador para gerar labels únicos de pontenciação
@@ -59,7 +59,7 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
     assembly.append(".data")
     assembly.append(".align 3")
     for val in valores:
-        x = f"val_{str(val).replace(".", "_")}" # cria a label do valor
+        x = f"val_{str(val).replace('.', '_')}" # cria a label do valor
         assembly.append(f"{x}: .double {val}")
 
     # declarar memorias com valor padrão de 0.0
@@ -119,21 +119,20 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
 
             if ValidarNomeMemoria(token):
                 if pilhaReg:
-                    r1 = pilhaReg.pop()
+                    r1 = pilhaReg[-1]  # peek, não pop — mantém resultado na pilha
                     assembly.append(f"LDR R0, =memo_{token}")
                     assembly.append(f"VSTR.F64 {r1}, [R0]")
-                    regsLivres.insert(0, r1)
                 else:
                     regist = regsLivres.pop(0)
                     assembly.append(f"LDR R0, =memo_{token}")
-                    assembly.append(f"VLDR.F64 {reg}, [R0]")
+                    assembly.append(f"VLDR.F64 {regist}, [R0]")
                     pilhaReg.append(regist)
                 continue
 
             if ValidarNumero(token):
                 reg = regsLivres.pop(0) # pega o primeiro registrador livre
                 val = float(token)
-                x = f"val_{str(val).replace(".", "_")}"
+                x = f"val_{str(val).replace('.', '_')}"
                 assembly.append(f"LDR R0, ={x}") # carrega o endereço de x em R0
                 assembly.append(f"VLDR.F64 {reg}, [R0]") # carrega o valor no registrador
                 pilhaReg.append(reg)  # empilha o registrador para uso futuro
@@ -201,8 +200,16 @@ def gerarAssembly(todosTokens, arquivoSaida='out.s'):
 
     return assembly  # retorna a lista
 
-lista = lerArquivo.lerArquivo("src/arquivo1.txt")
 
-todosTokens = parseExpressao.parseMultiplas(lista)
+if __name__ == "__main__":
+    import sys
+    import os
 
-resultado = gerarAssembly(todosTokens, 'outputs/out.s')
+    dirScript = os.path.dirname(os.path.abspath(__file__))
+    dirOutputs = os.path.join(dirScript, '..', 'outputs')
+    os.makedirs(dirOutputs, exist_ok=True)
+
+    arquivo = sys.argv[1] if len(sys.argv) > 1 else os.path.join(dirScript, 'arquivo1.txt')
+    lista = lerArquivo.lerArquivo(arquivo)
+    todosTokens = parseExpressao.parseMultiplas(lista)
+    resultado = gerarAssembly(todosTokens, os.path.join(dirOutputs, 'ultima_exec_Assembly.s'))
