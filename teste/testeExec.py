@@ -1,3 +1,5 @@
+# Aluno 2 - Victor Rahal Basseto
+
 from src.executarExpressao import executarExpressao
 
 def teste_soma():
