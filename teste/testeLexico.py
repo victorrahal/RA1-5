@@ -1,3 +1,5 @@
+# Aluno 2 - Victor Rahal Basseto
+
 from src.parseExpressao import parseExpressao
 
 def teste_exp_soma():
