@@ -1,3 +1,4 @@
+# Aluno 4 - Paulo Henrique Eidi Mino
 # Arquivo de funções de utilidade para deixar o arquivo main() mais enxuto
 
 import sys
