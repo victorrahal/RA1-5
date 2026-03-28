@@ -1,6 +1,6 @@
 # Aluno 1 - João Henrique
 # Aluno 2 - Victor Rahal Basseto
-# Aluno 3 - Paulo Henrique Eidi Mino
+# Aluno 4 - Paulo Henrique Eidi Mino
 
 import lerArquivo
 
