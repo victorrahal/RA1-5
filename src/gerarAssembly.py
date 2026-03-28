@@ -2,7 +2,6 @@
 import parseExpressao
 import lerArquivo
 
-
 def ValidarNomeMemoria(token):
     try:
         if token.isalpha() and token.isupper() and token != 'RES':

@@ -7,7 +7,6 @@ from executarExpressao import executarExpressao
 from gerarAssembly import gerarAssembly
 from exibirResultados import exibirResultados
  
- 
 def main():
     nomeArquivo = validarArgumentos()
     print(f"Processando arquivo: {nomeArquivo}")
@@ -77,7 +76,6 @@ def main():
  
     print()
     print("Processamento concluído com sucesso!")
- 
  
 if __name__ == "__main__":
     main()
