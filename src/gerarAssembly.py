@@ -198,17 +198,3 @@ def gerarAssembly(todosTokens, arquivoSaida='ultima_exec_Assembly.s'):
             f.write(linha + '\n')
 
     return assembly  # retorna a lista
-
-
-if __name__ == "__main__":
-    import sys
-    import os
-
-    dirScript = os.path.dirname(os.path.abspath(__file__))
-    dirOutputs = os.path.join(dirScript, '..', 'outputs')
-    os.makedirs(dirOutputs, exist_ok=True)
-
-    arquivo = sys.argv[1] if len(sys.argv) > 1 else os.path.join(dirScript, 'arquivo1.txt')
-    lista = lerArquivo.lerArquivo(arquivo)
-    todosTokens = parseExpressao.parseMultiplas(lista)
-    resultado = gerarAssembly(todosTokens, os.path.join(dirOutputs, 'ultima_exec_Assembly.s'))

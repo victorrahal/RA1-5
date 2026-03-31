@@ -90,10 +90,3 @@ def parseMultiplas(expressoes):
         resultado.append(tokens)
 
     return resultado
-
-if __name__ == "__main__":
-    import os
-    dirScript = os.path.dirname(os.path.abspath(__file__))
-    lista = lerArquivo.lerArquivo(os.path.join(dirScript, "arquivo1.txt"))
-    resultado = parseMultiplas(lista)
-    print(resultado)
