@@ -15,3 +15,5 @@ MEM 2 +
 2 RES
 3 4 + 
 1 RES
+
+Bom dia grupo
